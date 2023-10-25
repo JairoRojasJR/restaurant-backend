@@ -4,9 +4,9 @@
   "description": "Este es el backend de la apliación de de restaurant-sf",
   "main": "dist/index.js",
   "scripts": {
-    "start": "node dist/index.js",
     "build": "tsc",
-    "dev": "pnpm run build && concurrently \"tsc --watch\" \"nodemon dist/index.js\"",
+    "dev": "ts-node-dev -r tsconfig-paths/register src/index.ts",
+    "start": "node dist/index.js",
     "lint": "eslint . --fix",
     "format": "prettier . --write",
     "prepare": "husky install"
@@ -16,10 +16,13 @@
   "devDependencies": {
     "@types/dotenv-flow": "3.3.1",
     "@types/express": "4.17.19",
+    "@types/multer": "1.4.9",
     "@types/node": "20.8.6",
+    "@types/uuid": "9.0.6",
     "@typescript-eslint/eslint-plugin": "6.7.5",
     "concurrently": "8.2.1",
     "eslint": "8.51.0",
+    "eslint-config-prettier": "9.0.0",
     "eslint-config-standard-with-typescript": "39.1.1",
     "eslint-plugin-import": "2.28.1",
     "eslint-plugin-n": "16.2.0",
@@ -27,20 +30,26 @@
     "eslint-plugin-promise": "6.1.1",
     "husky": "8.0.3",
     "lint-staged": "15.0.1",
-    "module-alias": "2.2.3",
     "nodemon": "3.0.1",
     "prettier": "3.0.3",
+    "ts-node-dev": "2.0.0",
+    "tsconfig-paths": "4.2.0",
     "typescript": "5.2.2"
   },
   "dependencies": {
+    "@azure/storage-blob": "12.16.0",
+    "@typegoose/typegoose": "11.6.0",
+    "@types/cors": "2.8.14",
+    "cors": "2.8.5",
     "dotenv-flow": "4.0.0",
-    "express": "4.18.2"
+    "express": "4.18.2",
+    "mongoose": "7.6.2",
+    "multer": "1.4.5-lts.1",
+    "uuid": "9.0.1",
+    "zod": "3.22.4"
   },
   "lint-staged": {
     "*.ts": "eslint --fix",
     "**/*.{ts,js,json,md}": "prettier --write"
-  },
-  "_moduleAliases": {
-    "@": "dist/"
   }
 }
