@@ -1,6 +1,6 @@
 /* eslint-disable import/first */
-import dotenvFlow from 'dotenv-flow'
-dotenvFlow.config()
+import dotenv from 'dotenv'
+dotenv.config()
 import { azConnection } from '@/utils/az-blob'
 azConnection()
 import '@/utils/db'
