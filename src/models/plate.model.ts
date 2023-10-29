@@ -3,10 +3,10 @@ import { platesOrder } from '@/consts'
 import { type PlateOrder } from '@/types'
 
 export class Plate {
-  @prop({ required: [true, 'El nombre es requerido'] })
+  @prop({ required: [true, 'El nombre es requerido'], unique: true })
   name: string
 
-  @prop({ required: [true, 'La imagen es requerida'] })
+  @prop({ required: [true, 'La imagen es requerida'], unique: true })
   image: string
 
   @prop({ required: [true, 'Tipo de orden requerida'], enum: platesOrder })

@@ -1,11 +1,7 @@
 import type { Request, Response } from 'express'
 import { type Plate, PlateModel } from '@/models/plate.model'
-import type {
-  UpdatePlateBodyType,
-  AddPlateType,
-  UpdatePlateQueryType,
-  DeletePlateQueryType
-} from '@/schemas/plates.schema'
+import type { UpdatePlateBodyType, AddPlateType } from '@/schemas/plates.schema'
+import type { TypeMongooseIdType } from '@/schemas'
 import { getErrorMessage, getNotFoundDocMsg } from '@/utils'
 import { createBlobName, deleteBlob, uploadBlob } from '@/utils/az-blob'
 import { type BlobPaths } from '@/types'
@@ -49,7 +45,7 @@ export const addPlate = async (
 }
 
 export const updatePlate = async (
-  req: Request<unknown, unknown, UpdatePlateBodyType, UpdatePlateQueryType>,
+  req: Request<unknown, unknown, UpdatePlateBodyType, TypeMongooseIdType>,
   res: Response
 ): Promise<Response> => {
   try {
@@ -79,7 +75,7 @@ export const updatePlate = async (
 }
 
 export const deletePlate = async (
-  req: Request<unknown, unknown, unknown, DeletePlateQueryType>,
+  req: Request<unknown, unknown, unknown, TypeMongooseIdType>,
   res: Response
 ): Promise<Response> => {
   try {

@@ -4,7 +4,8 @@ import { validatorContenType } from '@/middleware/validator-content-type'
 import { validatorSchema } from '@/middleware/validator-schema.middleware'
 import { checkErrMulter } from '@/middleware/check-err-multer'
 import { addPlate, deletePlate, getPlates, updatePlate } from '@/controllers/plate.controller'
-import { AddPlateSchema, DeletePlateSchema, UpdatePlateSchema } from '@/schemas/plates.schema'
+import { AddPlateSchema, UpdatePlateSchema } from '@/schemas/plates.schema'
+import { TypeMongooseIdInQuerySchema } from '@/schemas'
 
 const router = Router()
 
@@ -27,7 +28,7 @@ router.post(
   addPlate
 )
 router.put('/', upload.single('image'), validatorSchema(UpdatePlateSchema), updatePlate)
-router.delete('/', validatorSchema(DeletePlateSchema), deletePlate)
+router.delete('/', validatorSchema(TypeMongooseIdInQuerySchema), deletePlate)
 
 router.use(checkErrMulter)
 

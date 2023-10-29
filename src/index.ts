@@ -2,9 +2,9 @@
 import 'module-alias/register'
 import dotenv from 'dotenv'
 dotenv.config()
+import '@/utils/db'
 import { azConnection } from '@/utils/az-blob'
 azConnection()
-import '@/utils/db'
 
 import express from 'express'
 import cors from 'cors'
@@ -12,7 +12,8 @@ import cors from 'cors'
 import { company } from '@/routes/company.routes'
 import { streaming as stream } from '@/routes/stream.routes'
 import { plates } from '@/routes/plate.routes'
-import { db } from './routes/db.routes'
+import { db } from '@/routes/db.routes'
+import { menu } from '@/routes/menu.routes'
 /* eslint-enable import/first */
 
 const fronted = process.env.FRONTEND
@@ -34,8 +35,9 @@ app.use('/api/db', db)
 app.use('/api/streaming', stream)
 app.use('/api/company', company)
 app.use('/api/plates', plates)
+app.use('/api/menu', menu)
 app.get('/', (req, res) => {
-  return res.send('🥵Mi aplicación de Express con typescript"🥵')
+  return res.send('🥵Mi aplicación de Express con typescript🥵')
 })
 
 const PORT = process.env.PORT ?? 6000

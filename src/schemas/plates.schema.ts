@@ -1,7 +1,7 @@
+import { z } from 'zod'
+import { TypeMongooseIdSchema as query } from '.'
 import { platesOrder } from '@/consts'
 import { type PlateOrder } from '@/types'
-import { Types } from 'mongoose'
-import { z } from 'zod'
 
 export const AddPlateSchema = z.object({
   body: z
@@ -24,17 +24,8 @@ export const AddPlateSchema = z.object({
     })
 })
 
-const idInQuery = z
-  .object({
-    _id: z.string()
-  })
-  .refine((data) => Types.ObjectId.isValid(data._id), {
-    message: 'id inválido, tiene que ser un id válido de mongoose',
-    path: ['id']
-  })
-
 export const UpdatePlateSchema = z.object({
-  query: idInQuery,
+  query,
   body: z
     .object({
       name: z.string().min(4).optional(),
@@ -66,9 +57,5 @@ export const UpdatePlateSchema = z.object({
     .optional()
 })
 
-export const DeletePlateSchema = z.object({ query: idInQuery })
-
 export type AddPlateType = z.infer<typeof AddPlateSchema>['body']
 export type UpdatePlateBodyType = z.infer<typeof UpdatePlateSchema>['body']
-export type UpdatePlateQueryType = z.infer<typeof UpdatePlateSchema>['query']
-export type DeletePlateQueryType = z.infer<typeof UpdatePlateSchema>['query']
