@@ -1,5 +1,6 @@
 /* eslint-disable import/first */
 import dotenv from 'dotenv'
+import 'module-alias/register'
 dotenv.config()
 import { azConnection } from '@/utils/az-blob'
 azConnection()
