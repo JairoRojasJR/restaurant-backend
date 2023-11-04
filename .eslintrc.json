@@ -22,7 +22,6 @@
   "rules": {
     "prettier/prettier": "error",
     "@typescript-eslint/space-before-function-paren": ["off"],
-    "@typescript-eslint/no-misused-promises": "off",
-    "@typescript-eslint/no-explicit-any": "off"
+    "@typescript-eslint/no-misused-promises": "off"
   }
 }

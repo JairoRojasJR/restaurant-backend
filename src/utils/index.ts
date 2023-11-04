@@ -21,7 +21,14 @@ export const validateHourFormat = (toValidate: string): boolean => {
 
 export const getNotFoundDocMsg = (_id: string): string => `No encontró el documento con _id: ${_id}`
 
-export const verifyDocExist = async (_id: string, model: ModelType<any>): Promise<void> => {
+export const verifyDocExist = async (_id: string, model: ModelType<unknown>): Promise<void> => {
   const exist = await model.findById(_id)
   if (exist === null) throw new Error(`No se encontró el documento con _id: ${_id}`)
 }
+
+// Zod get error messages
+export const getInvalidTypeError = (expectedType: string): string => {
+  return `Tipo inválido, se esperaba un ${expectedType}`
+}
+export const getRequiredError = (): string => 'Campo requerido'
+export const getMinError = (min: number): string => `Requiere un mínimo de ${min} carácteres`

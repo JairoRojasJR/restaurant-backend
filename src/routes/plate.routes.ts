@@ -4,7 +4,7 @@ import { validatorContenType } from '@/middleware/validator-content-type'
 import { validatorSchema } from '@/middleware/validator-schema.middleware'
 import { checkErrMulter } from '@/middleware/check-err-multer'
 import { addPlate, deletePlate, getPlates, updatePlate } from '@/controllers/plate.controller'
-import { AddPlateSchema, UpdatePlateSchema } from '@/schemas/plates.schema'
+import { AddPlateSchema, GetPlateSchema, UpdatePlateSchema } from '@/schemas/plates.schema'
 import { TypeMongooseIdInQuerySchema } from '@/schemas'
 
 const router = Router()
@@ -19,7 +19,7 @@ const upload = multer({
   }
 })
 
-router.get('/', getPlates)
+router.get('/', validatorSchema(GetPlateSchema), getPlates)
 router.post(
   '/',
   validatorContenType('multipart/form-data'),

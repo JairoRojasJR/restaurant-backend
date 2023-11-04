@@ -1,12 +1,50 @@
 import type { Request, Response } from 'express'
-import { type Model } from 'mongoose'
 import { type DocumentType } from '@typegoose/typegoose'
-import { type Company, CompanyModel } from '@/models/company.model'
 import { type Schedule, ScheduleModel } from '@/models/schedule.model'
 import { type Workday, WorkdayModel } from '@/models/workday.model'
-import type { GetCompanyQueryType, AddCompanyType } from '@/schemas/company.schema'
+import type {
+  GetCompanyQueryType,
+  AddCompanyType,
+  UpdateCompanyType
+} from '@/schemas/company.schema'
 import connection from '@/utils/db'
 import { getErrorMessage } from '@/utils'
+import { type Company, CompanyModel } from '@/models/company.model'
+import { type Model } from 'mongoose'
+
+const notFoundDocCompanyMsg = 'No se encontró el documento Company'
+
+const getPopulateds = async (
+  output: DocumentType<Company> | null
+): Promise<DocumentType<Company>> => {
+  if (output === null) throw new Error(notFoundDocCompanyMsg)
+  const schedules = await output.populate('schedules', '-_id')
+  const schedule = await schedules.populate('schedules.schedule', 'name -_id')
+  return schedule
+}
+
+export const getCompany = async (
+  req: Request<unknown, unknown, unknown, GetCompanyQueryType>,
+  res: Response
+): Promise<Response> => {
+  const { query } = req.query
+
+  try {
+    const companies = await CompanyModel.find()
+    let company = companies[0]
+    company = await getPopulateds(company)
+
+    if (companies.length === 0) throw new Error(notFoundDocCompanyMsg)
+    if (companies.length > 1) throw new Error('Se encontró más de un registro de company')
+
+    if (query !== undefined) {
+      const companyQuery = company.get(query)
+      return res.json(companyQuery)
+    } else return res.json(company)
+  } catch (e) {
+    return res.status(400).json({ error: getErrorMessage(e) })
+  }
+}
 
 export const addCompany = async (
   req: Request<unknown, unknown, AddCompanyType>,
@@ -16,6 +54,7 @@ export const addCompany = async (
 
   const savedSchedules: Array<DocumentType<Schedule>> = []
 
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   const dropCollection = async (model: Model<any>): Promise<void> => {
     try {
       const collectionName = model.collection.name
@@ -30,10 +69,9 @@ export const addCompany = async (
       const scheduledb = new ScheduleModel(schedule)
       const savedSchedule = await scheduledb.save()
       savedSchedules.push(savedSchedule)
-    } catch (error) {
-      console.error(error)
+    } catch (e) {
       await dropCollection(ScheduleModel)
-      return res.status(400).json({ message: 'Surgió un error al agregar schedules' })
+      return res.status(400).json({ error: getErrorMessage(e) })
     }
   }
 
@@ -63,10 +101,10 @@ export const addCompany = async (
       const workdaydb = new WorkdayModel({ day, schedule: savedSchedule._id })
       const savedWorday = await workdaydb.save()
       savedWorkdays.push(savedWorday)
-    } catch (error) {
+    } catch (e) {
       await dropCollection(ScheduleModel)
       await dropCollection(WorkdayModel)
-      return res.status(400).json({ message: 'Surgió un error al agregar workdays' })
+      return res.status(400).json({ error: getErrorMessage(e) })
     }
   }
 
@@ -83,41 +121,11 @@ export const addCompany = async (
     savedCompany = await savedCompany.populate('schedules.schedule', 'name -_id')
 
     return res.json(savedCompany)
-  } catch (error) {
-    console.error(error)
+  } catch (e) {
     await dropCollection(ScheduleModel)
     await dropCollection(WorkdayModel)
     await dropCollection(CompanyModel)
-    return res.json({ message: 'Surgió un error al agregar company' })
-  }
-}
-
-export const getCompany = async (
-  req: Request<unknown, unknown, unknown, GetCompanyQueryType>,
-  res: Response
-): Promise<Response> => {
-  const { query } = req.query
-  const notFoundDocCompanyMsg = 'No se encontró el documento Company'
-
-  const getPopulateds = async (company: DocumentType<Company>): Promise<DocumentType<Company>> => {
-    const schedules = await company.populate('schedules', '-_id')
-    return await schedules.populate('schedules.schedule', 'name -_id')
-  }
-
-  try {
-    if (query !== undefined) {
-      let company = await CompanyModel.findOne({}, `${query} -_id`)
-      if (company === null) throw new Error(notFoundDocCompanyMsg)
-      if (query === 'schedules') company = await getPopulateds(company)
-      return res.json(company)
-    } else {
-      let company = await CompanyModel.findOne()
-      if (company === null) throw new Error(notFoundDocCompanyMsg)
-      company = await getPopulateds(company)
-      return res.json(company)
-    }
-  } catch (error) {
-    return res.json({ message: getErrorMessage(error) })
+    return res.status(400).json({ error: getErrorMessage(e) })
   }
 }
 
@@ -126,7 +134,7 @@ export const getSchedules = async (req: Request, res: Response): Promise<Respons
     const schedules = await ScheduleModel.find()
     return res.json(schedules)
   } catch (e) {
-    return res.status(400).send({ message: getErrorMessage(e) })
+    return res.status(400).send({ error: getErrorMessage(e) })
   }
 }
 
@@ -135,6 +143,33 @@ export const getWorkdays = async (req: Request, res: Response): Promise<Response
     const workdays = await WorkdayModel.find().populate('schedule', 'name -_id')
     return res.json(workdays)
   } catch (e) {
-    return res.json({ error: getErrorMessage(e) })
+    return res.status(400).json({ error: getErrorMessage(e) })
+  }
+}
+
+export const updateCompany = async (
+  req: Request<unknown, unknown, UpdateCompanyType>,
+  res: Response
+): Promise<Response> => {
+  try {
+    const companies = await CompanyModel.find()
+    const currentCompany = companies[0]
+    const company: Partial<Company> = {}
+
+    const { name, address, status } = req.body
+
+    if (name !== undefined) company.name = name
+    if (address !== undefined) company.address = address
+    if (status !== undefined) {
+      company.status = { is: status, confirmed: true, confirmedAt: new Date() }
+    }
+
+    let updatedCompany = await CompanyModel.findByIdAndUpdate(currentCompany._id, company, {
+      new: true
+    })
+    updatedCompany = await getPopulateds(updatedCompany)
+    return res.json(updatedCompany)
+  } catch (e) {
+    return res.status(400).json({ error: getErrorMessage(e) })
   }
 }

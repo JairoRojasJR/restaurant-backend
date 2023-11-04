@@ -27,7 +27,7 @@ export const addPlateToMenu = async (
     const populated = await savedMenuPlate.populate('plate')
     return res.json(populated)
   } catch (error) {
-    return res.json({ error: getErrorMessage(error) })
+    return res.status(400).json({ error: getErrorMessage(error) })
   }
 }
 

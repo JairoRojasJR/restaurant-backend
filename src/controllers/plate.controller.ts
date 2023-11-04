@@ -1,6 +1,6 @@
 import type { Request, Response } from 'express'
 import { type Plate, PlateModel } from '@/models/plate.model'
-import type { UpdatePlateBodyType, AddPlateType } from '@/schemas/plates.schema'
+import type { UpdatePlateBodyType, AddPlateType, GetPlateQueryType } from '@/schemas/plates.schema'
 import type { TypeMongooseIdType } from '@/schemas'
 import { getErrorMessage, getNotFoundDocMsg } from '@/utils'
 import { createBlobName, deleteBlob, uploadBlob } from '@/utils/az-blob'
@@ -8,12 +8,23 @@ import { type BlobPaths } from '@/types'
 
 const platesPath: BlobPaths = 'plates/'
 
-export const getPlates = async (req: Request, res: Response): Promise<Response> => {
+export const getPlates = async (
+  req: Request<unknown, unknown, unknown, GetPlateQueryType>,
+  res: Response
+): Promise<Response> => {
+  const { query } = req
+
   try {
-    const plates = await PlateModel.find()
-    return res.json(plates)
+    if (query !== undefined) {
+      const plateQuery = await PlateModel.findOne(query)
+      if (plateQuery === null) return res.status(404).json({ error: 'No se encontró el plato' })
+      return res.json(plateQuery)
+    } else {
+      const plates = await PlateModel.find()
+      return res.json(plates)
+    }
   } catch (e) {
-    return res.status(400).json({ message: getErrorMessage(e) })
+    return res.status(400).json({ error: getErrorMessage(e) })
   }
 }
 
@@ -40,7 +51,7 @@ export const addPlate = async (
 
     return res.json(savedPlate)
   } catch (e) {
-    return res.status(400).json({ message: getErrorMessage(e) })
+    return res.status(400).json({ error: getErrorMessage(e) })
   }
 }
 
@@ -86,6 +97,6 @@ export const deletePlate = async (
     const deletedPlate = await PlateModel.findByIdAndDelete(_id)
     return res.json(deletedPlate)
   } catch (e) {
-    return res.status(400).json({ message: getErrorMessage(e) })
+    return res.status(400).json({ error: getErrorMessage(e) })
   }
 }

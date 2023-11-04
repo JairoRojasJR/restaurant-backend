@@ -46,5 +46,24 @@ export const AddCompanySchema = z.object({
     })
 })
 
+export const UpdateCompanySchema = z.object({
+  body: z
+    .object({
+      name: z.string().min(4).optional(),
+      address: z.string().min(5).optional(),
+      status: z.union([z.literal(shopStatus[0]), z.literal(shopStatus[1])]).optional()
+    })
+    .refine(
+      (data) => {
+        return !(data.name === undefined && data.address === undefined && data.status === undefined)
+      },
+      {
+        message: 'Se requiere una propiedad a actualizar, se recibió 0',
+        path: ['name', 'address', 'status']
+      }
+    )
+})
+
 export type GetCompanyQueryType = z.infer<typeof GetCompanySchema>['query']
 export type AddCompanyType = z.infer<typeof AddCompanySchema>['body']
+export type UpdateCompanyType = z.infer<typeof UpdateCompanySchema>['body']

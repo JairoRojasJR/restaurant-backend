@@ -1,5 +1,7 @@
 import type { NextFunction, Request, Response } from 'express'
 import { ZodError, type AnyZodObject } from 'zod'
+import { getErrorMessage } from '@/utils'
+import { type ResponseSchemaError } from '@/types'
 
 export const validatorSchema =
   (schema: AnyZodObject) =>
@@ -9,7 +11,11 @@ export const validatorSchema =
       next()
     } catch (e) {
       if (e instanceof ZodError) {
-        res.status(400).json(e.issues)
-      }
+        const schemaError: ResponseSchemaError = {
+          name: e.name,
+          errors: e.issues.map((issue) => ({ path: issue.path, message: issue.message }))
+        }
+        res.status(400).json(schemaError)
+      } else res.status(400).json({ error: getErrorMessage(e) })
     }
   }

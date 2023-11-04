@@ -8,6 +8,7 @@ azConnection()
 
 import express from 'express'
 import cors from 'cors'
+import logger from 'morgan'
 
 import { company } from '@/routes/company.routes'
 import { streaming as stream } from '@/routes/stream.routes'
@@ -29,6 +30,7 @@ const corsOptions: cors.CorsOptions = {
 
 app.use(cors(corsOptions))
 app.use(express.json())
+app.use(logger('dev'))
 //
 
 app.use('/api/db', db)
