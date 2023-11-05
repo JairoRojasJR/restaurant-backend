@@ -8,7 +8,8 @@
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
-    "standard-with-typescript"
+    "standard-with-typescript",
+    "prettier"
   ],
   "plugins": ["@typescript-eslint", "prettier"],
   "parser": "@typescript-eslint/parser",
@@ -20,6 +21,7 @@
   "ignorePatterns": ["dist"],
   "rules": {
     "prettier/prettier": "error",
-    "@typescript-eslint/space-before-function-paren": ["off"]
+    "@typescript-eslint/space-before-function-paren": ["off"],
+    "@typescript-eslint/no-misused-promises": "off"
   }
 }
