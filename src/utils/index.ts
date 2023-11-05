@@ -21,7 +21,8 @@ export const validateHourFormat = (toValidate: string): boolean => {
 
 export const getNotFoundDocMsg = (_id: string): string => `No encontró el documento con _id: ${_id}`
 
-export const verifyDocExist = async (_id: string, model: ModelType<unknown>): Promise<void> => {
+/* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+export const verifyDocExist = async (_id: string, model: ModelType<any>): Promise<void> => {
   const exist = await model.findById(_id)
   if (exist === null) throw new Error(`No se encontró el documento con _id: ${_id}`)
 }
