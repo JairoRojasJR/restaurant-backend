@@ -1,5 +1,7 @@
 import type { Request, Response } from 'express'
+import { type Model } from 'mongoose'
 import { type DocumentType } from '@typegoose/typegoose'
+import { type Company, CompanyModel } from '@/models/company.model'
 import { type Schedule, ScheduleModel } from '@/models/schedule.model'
 import { type Workday, WorkdayModel } from '@/models/workday.model'
 import type {
@@ -7,10 +9,8 @@ import type {
   AddCompanyType,
   UpdateCompanyType
 } from '@/schemas/company.schema'
-import connection from '@/utils/db'
+import { dbClient } from '@/utils/db'
 import { getErrorMessage } from '@/utils'
-import { type Company, CompanyModel } from '@/models/company.model'
-import { type Model } from 'mongoose'
 
 const notFoundDocCompanyMsg = 'No se encontró el documento Company'
 
@@ -37,7 +37,7 @@ export const getCompany = async (
     if (companies.length === 0) throw new Error(notFoundDocCompanyMsg)
     if (companies.length > 1) throw new Error('Se encontró más de un registro de company')
 
-    if (query !== undefined) {
+    if (query !== undefined && Object.values(query).length > 0) {
       const companyQuery = company.get(query)
       return res.json(companyQuery)
     } else return res.json(company)
@@ -58,7 +58,8 @@ export const addCompany = async (
   const dropCollection = async (model: Model<any>): Promise<void> => {
     try {
       const collectionName = model.collection.name
-      await connection.db.collection(collectionName).drop()
+      const client = await dbClient
+      await client.db().collection(collectionName).drop()
     } catch (error) {
       console.error(error)
     }

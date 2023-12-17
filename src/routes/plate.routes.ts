@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import multer from 'multer'
+import { checkAuth } from '@/middleware/auth.middleware'
 import { validatorContenType } from '@/middleware/validator-content-type'
 import { validatorSchema } from '@/middleware/validator-schema.middleware'
 import { checkErrMulter } from '@/middleware/check-err-multer'
@@ -22,13 +23,14 @@ const upload = multer({
 router.get('/', validatorSchema(GetPlateSchema), getPlates)
 router.post(
   '/',
+  checkAuth,
   validatorContenType('multipart/form-data'),
   upload.single('image'),
   validatorSchema(AddPlateSchema),
   addPlate
 )
-router.put('/', upload.single('image'), validatorSchema(UpdatePlateSchema), updatePlate)
-router.delete('/', validatorSchema(TypeMongooseIdInQuerySchema), deletePlate)
+router.put('/', checkAuth, upload.single('image'), validatorSchema(UpdatePlateSchema), updatePlate)
+router.delete('/', checkAuth, validatorSchema(TypeMongooseIdInQuerySchema), deletePlate)
 
 router.use(checkErrMulter)
 

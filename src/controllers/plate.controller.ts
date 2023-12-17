@@ -15,7 +15,7 @@ export const getPlates = async (
   const { query } = req
 
   try {
-    if (query !== undefined) {
+    if (query !== undefined && Object.values(query).length > 0) {
       const plateQuery = await PlateModel.findOne(query)
       if (plateQuery === null) return res.status(404).json({ error: 'No se encontró el plato' })
       return res.json(plateQuery)

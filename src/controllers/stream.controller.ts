@@ -1,6 +1,6 @@
+import type { Request, Response } from 'express'
 import { getErrorMessage } from '@/utils'
 import { azConnection } from '@/utils/az-blob'
-import type { Request, Response } from 'express'
 const containerClient = azConnection()
 
 export const stream = async (req: Request, res: Response): Promise<Response | undefined> => {

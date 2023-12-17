@@ -1,6 +1,6 @@
 import type { Response, Request } from 'express'
 import { type DropCollectionType } from '@/schemas/db.schema'
-import connection from '@/utils/db'
+import { dbClient } from '@/utils/db'
 import { getErrorMessage } from '@/utils'
 
 export const dropCollection = async (
@@ -13,7 +13,8 @@ export const dropCollection = async (
 
   for (const collection of collectionsToDelete) {
     try {
-      await connection.db.collection(collection).drop()
+      const client = await dbClient
+      await client.db().collection(collection).drop()
     } catch (e) {
       errors.push(getErrorMessage(e))
     }

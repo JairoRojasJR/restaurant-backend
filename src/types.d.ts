@@ -23,3 +23,12 @@ interface ResponseSchemaErrorErrors extends ResponseMessage {
 }
 
 export type ResponseMessageOrError = ResponseMessage & ResponseError
+
+export interface SessionCookie {
+  originalMaxAge: number
+  expires: string | Date
+  secure: boolean
+  httpOnly: boolean
+  path: string
+  sameSite: boolean | 'lax' | 'strict' | 'none'
+}

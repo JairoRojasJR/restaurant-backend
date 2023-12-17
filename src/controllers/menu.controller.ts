@@ -1,3 +1,4 @@
+import type { Request, Response } from 'express'
 import { MenuModel } from '@/models/menu.model'
 import { type TypeMongooseIdInQueryType } from '@/schemas'
 import type {
@@ -6,7 +7,6 @@ import type {
   UpdatePlateFromMenuQueryType
 } from '@/schemas/menu.schema'
 import { getErrorMessage, verifyDocExist } from '@/utils'
-import type { Request, Response } from 'express'
 
 export const getMenu = async (req: Request, res: Response): Promise<Response> => {
   try {

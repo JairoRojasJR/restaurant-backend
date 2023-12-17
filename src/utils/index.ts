@@ -31,5 +31,15 @@ export const verifyDocExist = async (_id: string, model: ModelType<any>): Promis
 export const getInvalidTypeError = (expectedType: string): string => {
   return `Tipo inválido, se esperaba un ${expectedType}`
 }
+//
+
 export const getRequiredError = (): string => 'Campo requerido'
 export const getMinError = (min: number): string => `Requiere un mínimo de ${min} carácteres`
+
+export const getVariableEnv = (variable: string): string => {
+  const variableRecovered = process.env[variable]
+  if (variableRecovered === undefined) {
+    throw new Error(`No se pudo recuperar la variable de entorno ${variable}`)
+  }
+  return variableRecovered
+}

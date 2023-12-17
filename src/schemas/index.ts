@@ -1,6 +1,6 @@
-import { getRequiredError } from '@/utils'
 import { Types } from 'mongoose'
 import { z } from 'zod'
+import { getRequiredError } from '@/utils'
 
 export const zIsMongooseTypeId = z.string().refine((_id) => Types.ObjectId.isValid(_id), {
   message: 'id inválido, tiene que ser un id válido de mongoose'

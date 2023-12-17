@@ -1,18 +1,17 @@
-import { connect, connection } from 'mongoose'
+import mongoose from 'mongoose'
 
 const name = process.env.DBNAME
 const uri = `${process.env.DBURI}${name}${process.env.DBOPTIONS}`
 
-/* eslint-disable @typescript-eslint/no-floating-promises */
-connect(uri)
-/* eslint-enable @typescript-eslint/no-floating-promises */
+mongoose.set('strictQuery', true)
 
-connection.on('connected', (db) => {
+export const dbClient = mongoose.connect(uri).then((m) => {
   console.log(`🔥BBDD (${name}) conectada🔥`)
+  return m.connection.getClient()
 })
 
-connection.on('error', (e: Error) => {
-  console.log(`🥵Sucedió un error al conectarse a ${name}🥵: ${e.message}`)
+mongoose.connection.on('error', () => {
+  console.log(`🥵Sucedió un error al conectarse a ${name}🥵`)
 })
 
-export default connection
+export default dbClient

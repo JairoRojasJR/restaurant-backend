@@ -1,8 +1,8 @@
 import { z } from 'zod'
 import { TypeMongooseIdSchema as query, zRequriedObjectSchema } from '.'
 import { platesOrder } from '@/consts'
-import { type PlateOrder } from '@/types'
 import { getInvalidTypeError, getMinError, getRequiredError } from '@/utils'
+import { type PlateOrder } from '@/types'
 
 const zPlateName = z
   .string({
