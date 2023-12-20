@@ -1,5 +1,5 @@
+import crypto from 'node:crypto'
 import { BlobServiceClient, type ContainerClient } from '@azure/storage-blob'
-import { v4 as uuidv4 } from 'uuid'
 import { getErrorMessage } from '.'
 
 let containerClient: ContainerClient
@@ -25,7 +25,7 @@ export const createBlobName = (path: string, fullFileName: string): string => {
   const fileNameSplit = fullFileName.split('.')
 
   const fileName = fileNameSplit[0]
-  const blobNameId = '--id--' + uuidv4()
+  const blobNameId = '--id--' + crypto.randomUUID()
   const fileExtension = fileNameSplit[1]
 
   return `${path}${fileName}${blobNameId}.${fileExtension}`
